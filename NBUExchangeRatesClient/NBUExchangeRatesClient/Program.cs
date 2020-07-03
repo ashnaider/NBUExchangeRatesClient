@@ -14,6 +14,8 @@ namespace NBUExchangeRatesClient
         [STAThread]
         static void Main()
         {
+            XMLGetter.getXMLSourseFile();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
