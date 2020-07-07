@@ -37,7 +37,7 @@ namespace NBUExchangeRatesClient
     {
         public String eng_id;
         public double purchase;
-        public double sell;
+        public double sale;
     }
 
     struct Organisation
