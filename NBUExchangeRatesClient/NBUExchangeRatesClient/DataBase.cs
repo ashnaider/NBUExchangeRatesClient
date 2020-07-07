@@ -9,57 +9,6 @@ using Npgsql;
 
 namespace NBUExchangeRatesClient
 {
-    struct OrgType
-    {
-        public int id;
-        public String title;
-    }
-
-    struct CurrInfo
-    {
-        public String eng_id;
-        public String title;
-    }
-
-    struct Region
-    {
-        public String region_id;
-        public String title;
-    }
-
-    struct City
-    {
-        public String city_id;
-        public String title;
-    }
-
-    struct Currency
-    {
-        public String eng_id;
-        public double purchase;
-        public double sale;
-    }
-
-    struct Organisation
-    {
-        public String org_id;
-        public int org_type;
-        public String title;
-        public String region_id;
-        public String city_id;
-        public String phone;
-        public String address;
-        public List<Currency> currencies;
-    }
-
-    struct TotalInfo
-    {
-        public List<Organisation> organisations;
-        public List<CurrInfo> currenciesInfo;
-        public List<Region> regions;
-        public List<City> cities;
-    }
-
     class DataBase
     {
 

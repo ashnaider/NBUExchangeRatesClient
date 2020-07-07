@@ -15,8 +15,12 @@ namespace NBUExchangeRatesClient
         static void Main()
         {
 
+            String path = @"..\..\nbu_source.xml";
+            XmlParser xmlParser = new XmlParser(path);
 
-            XMLGetter.getXMLSourseFile();
+            xmlParser.getXMLSourseFile();
+
+            xmlParser.ParseFile();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
