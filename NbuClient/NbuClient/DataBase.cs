@@ -41,7 +41,7 @@ namespace NbuClient
         NpgsqlCommand cmd;
         NpgsqlDataReader rdr;
 
-        List<String> tables = new List<string> { "org_type", "region", "city", "curr_info", "organization", "currency" };
+        List<String> tables = new List<string> { "org_type", "region", "city", "curr_info", "organization", "currency", "date" };
 
         String CurrDbName;
 
@@ -63,11 +63,13 @@ namespace NbuClient
                 Console.WriteLine(foundDbName);
                 if (foundDbName == dbName)
                 {
+                    Console.WriteLine("Database {0} is exist!", dbName);
                     rdr.Close();
                     return true;
                 }
             }
 
+            Console.WriteLine("Database {0} does not exist!", dbName);
             rdr.Close();
             return false;
         }
@@ -95,6 +97,18 @@ namespace NbuClient
             return true;
         }
 
+        public String GetDate()
+        {
+            String command = "SELECT date from date;";
+            cmd.CommandText = command;
+            rdr = cmd.ExecuteReader();
+
+            if (rdr.Read())
+            {
+                return rdr.GetString(0);
+            }
+            return "";
+        }
 
         public List<OrgType> GetOrgTypes()
         {
@@ -232,6 +246,7 @@ namespace NbuClient
                 publicOrgTmp.Phone = rdr.GetString(3);
                 publicOrgTmp.Address = rdr.GetString(4);
                 publicOrgTmp.orgType = rdr.GetInt32(8).ToString();
+
                 publicOrgTmp.Region = rdr.GetString(12);
                 publicOrgTmp.City = rdr.GetString(15);
 
@@ -251,7 +266,6 @@ namespace NbuClient
             publicOrgTmp.PublicCurrencies = publicCurrList;
             res.Add(publicOrgTmp);
 
-
             rdr.Close();
 
             return res;
@@ -260,6 +274,11 @@ namespace NbuClient
 
         public void FillTables(TotalInfo totalInfo)
         {
+            // fill date
+            this.InsertIntoWithValues("date",
+                new List<String> { "date" },
+                new List<String> { totalInfo.Date });
+
             // fill org_type
             foreach (OrgType ot in totalInfo.orgTypes)
             {
@@ -313,6 +332,7 @@ namespace NbuClient
                                        org.city_id,
                                         });
 
+                Console.WriteLine("ID - " + org_id);
 
                 foreach (Currency curr in org.currencies)
                 {
@@ -326,6 +346,7 @@ namespace NbuClient
 
                     String update = "UPDATE currency SET org_id = " + org_id + " WHERE id = " + curr_id + ";";
 
+                    Console.WriteLine(update);
 
                     cmd.CommandText = update;
                     cmd.ExecuteNonQuery();
@@ -344,6 +365,7 @@ namespace NbuClient
 
             cmd.CommandText = command;
 
+            Console.WriteLine(command);
 
             int res = 0;
             rdr = cmd.ExecuteReader();
@@ -415,6 +437,10 @@ namespace NbuClient
                 "sale DOUBLE PRECISION, " +
                 "org_id INTEGER, " +
                 "curr_info_id INTEGER REFERENCES curr_info(id) );");
+
+            commands.Add("CREATE TABLE date ( " +
+                "id SERIAL NOT NULL PRIMARY KEY, " +
+                "date VARCHAR(50) );");
 
             int tableNameId = 0;
             foreach (String command in commands)

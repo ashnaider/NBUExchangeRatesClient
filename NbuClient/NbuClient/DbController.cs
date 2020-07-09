@@ -76,6 +76,10 @@ namespace NbuClient
             return true;
         }
 
+        public String GetDate()
+        {
+            return db.GetDate();
+        }
         public List<PublicOrganization> GetAllOrganizations()
         {
             return db.GetOrganizations();

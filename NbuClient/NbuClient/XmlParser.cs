@@ -48,6 +48,8 @@ namespace NbuClient
 
             // получим корневой элемент
             XmlElement xRoot = xDoc.DocumentElement;
+
+            totalInfo.Date = xRoot.GetAttribute("date");
             // обход всех узлов в корневом элементе
             foreach (XmlNode xnode in xRoot)
             {
@@ -234,7 +236,6 @@ namespace NbuClient
     }
 
 
-
     struct OrgType
     {
         public int id;
@@ -281,6 +282,7 @@ namespace NbuClient
 
     struct TotalInfo
     {
+        public String Date;
         public List<Organisation> organisations;
         public List<OrgType> orgTypes;
         public List<CurrInfo> currenciesInfo;
