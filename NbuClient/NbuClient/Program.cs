@@ -4,14 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using System.Diagnostics; // for logging in console
-
-namespace NBUExchangeRatesClient
+namespace NbuClient
 {
     static class Program
     {
         /// <summary>
-        /// The main entry point for the application.
+        /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
         static void Main()
@@ -22,7 +20,6 @@ namespace NBUExchangeRatesClient
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
-
 
         static void ParserAndDbApiExample()
         {
@@ -38,12 +35,12 @@ namespace NBUExchangeRatesClient
 
             if (db.ConnectToDb(dbName, dbPass))
             {
-                Debug.WriteLine("connected");
+                // Debug.WriteLine("connected");
 
             }
             else
             {
-                Debug.WriteLine("error with database");
+                // Debug.WriteLine("error with database");
                 return;
             }
 
@@ -123,6 +120,5 @@ namespace NBUExchangeRatesClient
             }
             Console.WriteLine();
         }
-
     }
 }

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Net;
 
-namespace NBUExchangeRatesClient
+namespace NbuClient
 {
-
-
     class XmlParser
     {
         String filePath;
@@ -291,3 +289,4 @@ namespace NBUExchangeRatesClient
     }
 
 }
+

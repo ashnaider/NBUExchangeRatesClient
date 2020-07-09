@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A4F74FCF-884F-4AA4-8A3D-98A6521B891E}</ProjectGuid>
+    <ProjectGuid>{F4A6B76F-8CDD-4740-88C4-E15597C4402F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>NBUExchangeRatesClient</RootNamespace>
-    <AssemblyName>NBUExchangeRatesClient</AssemblyName>
+    <RootNamespace>NbuClient</RootNamespace>
+    <AssemblyName>NbuClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -86,13 +86,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-<<<<<<< HEAD
     <Compile Include="XmlParser.cs" />
-=======
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
->>>>>>> GUI
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Npgsql;
 
-namespace NBUExchangeRatesClient
+namespace NbuClient
 {
 
     struct PublicOrganization
@@ -216,7 +216,7 @@ namespace NBUExchangeRatesClient
                 {
                     id = new_id;
                     publicOrgTmp.PublicCurrencies = publicCurrList;
-                    
+
                     res.Add(publicOrgTmp);
                     publicCurrList = new List<PublicCurrency>(0);
 

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NBUExchangeRatesClient.Properties
+namespace NbuClient.Properties
 {
 
 
