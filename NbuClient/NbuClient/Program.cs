@@ -14,20 +14,6 @@ namespace NbuClient
         [STAThread]
         static void Main()
         {
-            DbController dbc = new DbController();
-
-            String pass = "!!!! YOUR PATH TO DB !!!!";
-
-            pass = "zw5&gc%3hi";
-
-            dbc.Connect(pass);
-
-            List<PublicOrganization> po = dbc.GetExchangers();
-
-            dbc.Update();
-
-            List<CurrInfo> ci = dbc.GetAllCurrenciesInfo();
-
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -102,12 +102,13 @@ namespace NbuClient
             String command = "SELECT date from date;";
             cmd.CommandText = command;
             rdr = cmd.ExecuteReader();
-
+            String res = "none";
             if (rdr.Read())
             {
-                return rdr.GetString(0);
+                res = rdr.GetString(0);
             }
-            return "";
+            rdr.Close();
+            return res;
         }
 
         public List<OrgType> GetOrgTypes()
