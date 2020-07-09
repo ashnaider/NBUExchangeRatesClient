@@ -10,21 +10,35 @@ using System.Net;
 namespace NBUExchangeRatesClient
 {
 
+
     class XmlParser
     {
         String filePath;
+        String link = "http://resources.finance.ua/ru/public/currency-cash.xml";
         public XmlParser(String filePath)
         {
             this.filePath = filePath;
+
         }
 
-        public const String linkToXML = "http://resources.finance.ua/ru/public/currency-cash.xml";
-        public void getXMLSourseFile()
+        public bool getFile(String url = "null")
         {
+            if ("null" == url)
+            {
+                url = link;
+            }
+            try
+            {
+                WebClient webClient = new WebClient();
 
-            WebClient webClient = new WebClient();
+                webClient.DownloadFile(url, filePath);
+            }
+            catch
+            {
+                return false;
+            }
 
-            webClient.DownloadFile(linkToXML, filePath);
+            return true;
         }
 
         public TotalInfo ParseFile()
@@ -65,7 +79,7 @@ namespace NBUExchangeRatesClient
                             org.org_type = int.Parse(org_type.Value);
                             org.title = title.Value;
                             org.region_id = region_id.Value;
-                            org.city_id = region_id.Value;
+                            org.city_id = city_id.Value;
                             org.phone = phone.Value;
                             org.address = address.Value;
                         }
@@ -88,15 +102,12 @@ namespace NBUExchangeRatesClient
                                         sale != null)
                                     {
                                         curr.eng_id = eng_id.Value;
-                                        curr.purchase = Convert.ToDouble(purchase.Value.Replace('.', ','));
-                                        curr.sale = Convert.ToDouble(sale.Value.Replace('.', ','));
+                                        curr.purchase = purchase.Value;
+                                        curr.sale = sale.Value;
 
-                                        Console.WriteLine(c.Name + " " + eng_id.Value + " " +
-                                            purchase.Value + " " + sale.Value);
                                     }
                                     currList.Add(curr);
                                 }
-                                Console.WriteLine(currencies.Name + " here!!!\n");
                             }
                         }
 
@@ -108,7 +119,6 @@ namespace NBUExchangeRatesClient
 
                 if (xnode.Name == "org_types")
                 {
-                    Console.WriteLine();
 
                     List<OrgType> orgTypeList = new List<OrgType>(0);
 
@@ -123,10 +133,10 @@ namespace NBUExchangeRatesClient
                         {
                             orgTypeStruct.id = int.Parse(id.Value);
                             orgTypeStruct.title = title.Value;
+
                         }
 
                         orgTypeList.Add(orgTypeStruct);
-                        Console.WriteLine(id.Value + " " + title.Value);
                     }
 
                     totalInfo.orgTypes = orgTypeList;
@@ -134,7 +144,6 @@ namespace NBUExchangeRatesClient
 
                 if (xnode.Name == "currencies")
                 {
-                    Console.WriteLine();
 
                     List<CurrInfo> currInfoList = new List<CurrInfo>(0);
 
@@ -149,11 +158,14 @@ namespace NBUExchangeRatesClient
                         {
                             currInfo.eng_id = eng_id.Value;
                             currInfo.title = title.Value;
+
+                            //db.InsertIntoWithValues("curr_info", new List<String> { "eng_title", "rus_title" },
+                            //                                    new List<String> { eng_id.Value, title.Value });
+
                         }
 
                         currInfoList.Add(currInfo);
 
-                        Console.WriteLine(eng_id.Value + " " + title.Value);
                     }
 
                     totalInfo.currenciesInfo = currInfoList;
@@ -161,7 +173,6 @@ namespace NBUExchangeRatesClient
 
                 if (xnode.Name == "regions")
                 {
-                    Console.WriteLine();
 
                     List<Region> regList = new List<Region>(0);
 
@@ -176,11 +187,14 @@ namespace NBUExchangeRatesClient
                         {
                             regStruct.region_id = region_id.Value;
                             regStruct.title = title.Value;
+
+                            //db.InsertIntoWithValues("region", 
+                            //    new List<String> { "region_id" , "title" }, 
+                            //    new List<String> { region_id.Value, title.Value });
                         }
 
                         regList.Add(regStruct);
 
-                        Console.WriteLine(region_id.Value + " " + title.Value);
                     }
 
                     totalInfo.regions = regList;
@@ -188,7 +202,6 @@ namespace NBUExchangeRatesClient
 
                 if (xnode.Name == "cities")
                 {
-                    Console.WriteLine();
 
                     List<City> cityList = new List<City>(0);
 
@@ -203,11 +216,14 @@ namespace NBUExchangeRatesClient
                         {
                             cityStruct.city_id = city_id.Value;
                             cityStruct.title = title.Value;
+
+                            //db.InsertIntoWithValues("city",
+                            //    new List<String> { "city_id", "title" },
+                            //    new List<String> { city_id.Value, title.Value });
                         }
 
                         cityList.Add(cityStruct);
 
-                        Console.WriteLine(city_id.Value + " " + title.Value);
                     }
 
                     totalInfo.cities = cityList;
@@ -218,6 +234,8 @@ namespace NBUExchangeRatesClient
             return totalInfo;
         }
     }
+
+
 
     struct OrgType
     {
@@ -246,8 +264,8 @@ namespace NBUExchangeRatesClient
     struct Currency
     {
         public String eng_id;
-        public double purchase;
-        public double sale;
+        public String purchase;
+        public String sale;
     }
 
     struct Organisation
@@ -262,6 +280,7 @@ namespace NBUExchangeRatesClient
         public List<Currency> currencies;
     }
 
+
     struct TotalInfo
     {
         public List<Organisation> organisations;
@@ -270,4 +289,5 @@ namespace NBUExchangeRatesClient
         public List<Region> regions;
         public List<City> cities;
     }
+
 }
