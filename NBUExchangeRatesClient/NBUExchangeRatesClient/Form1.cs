@@ -16,5 +16,10 @@ namespace NBUExchangeRatesClient
         {
             InitializeComponent();
         }
+
+        private void FindButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
