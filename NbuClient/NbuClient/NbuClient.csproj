@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase.cs" />
+    <Compile Include="DbController.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

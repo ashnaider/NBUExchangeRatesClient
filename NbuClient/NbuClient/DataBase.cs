@@ -175,7 +175,7 @@ namespace NbuClient
             return res;
         }
 
-        public List<PublicOrganization> GetOrganizations()
+        public List<PublicOrganization> GetOrganizations(bool Banks = true, bool Exchangers = true)
         {
             String command = "select * from organization " +
                 "inner join org_type on org_type.org_type_id = organization.org_type_id " +
@@ -203,6 +203,10 @@ namespace NbuClient
 
             while (rdr.Read())
             {
+                if ((!Banks && rdr.GetString(9) == "Банки") || (!Exchangers && rdr.GetString(9) == "Обменники"))
+                {
+                    continue;
+                }
                 ++counter;
                 int new_id = rdr.GetInt32(0);
 
