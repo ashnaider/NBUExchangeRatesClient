@@ -16,18 +16,54 @@ namespace NbuClient
 
         public Form1()
         {
+            InitializeComponent();
+            if (!Connect())
+            {
+                this.Close();
+            }
+        }
+
+        String GetPass()
+        {
+            return "zw5&gc%3hi";
+        }
+        bool Connect()
+        {
             dbc = new DbController();
 
             String pass = "!!!! YOUR PATH TO DB !!!!";
 
-            pass = "zw5&gc%3hi";
+            pass = GetPass();
 
-            dbc.Connect(pass);
+            bool isConnToDbSuccess, isConnToXmlSuccess;
+            dbc.Connect(pass, out isConnToDbSuccess, out isConnToXmlSuccess);
+            bool exit = false;
+            if (!isConnToDbSuccess)
+            {
+                MessageBox.Show("Error! Can not connect to Database!\n" +
+                    "Check your if db exist or your password is correct");
+                exit = true;
+            }
+            if (!isConnToXmlSuccess)
+            {
+                String message = "Error! Can not connect to XML source server!\n" +
+                    "Check your internet connection\n";
+                exit = true;
+                if (isConnToDbSuccess)
+                {
+                    message += " Program will load latest info from db";
+                    exit = false;
+                }
+                MessageBox.Show(message);
+            }
 
-
-            InitializeComponent();
+            if (exit)
+            {
+                return false;
+            }
 
             UpdateAllFromDb();
+            return true;
         }
 
         void UpdateAllFromDb()
@@ -36,11 +72,17 @@ namespace NbuClient
             UpdateCurrenciesFromDb();
             UpdateRegionsFromDb();
             UpdateCitiesFromDb();
+            UpdateSortByComboBox();
             UpdateOrgTypeFromDb();
         }
         void UpdateDateFromDb()
         {
             this.LastDateLabel.Text = dbc.GetDate();
+        }
+
+        void UpdateSortByComboBox()
+        {
+            SortByComboBox.Text = "All";
         }
 
         void UpdateCurrenciesFromDb()
@@ -96,8 +138,15 @@ namespace NbuClient
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
-            dbc.Update();
-            UpdateAllFromDb();
+            if (dbc.Update())
+            { 
+                UpdateAllFromDb();
+            }
+            else
+            {
+                MessageBox.Show("Error! Can not connect to XML source server!\n" +
+                                "Check your internet connection or try later");
+            }
         }
 
         List<String> GetInputValues()

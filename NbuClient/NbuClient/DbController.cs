@@ -26,9 +26,8 @@ namespace NbuClient
             }
         }
 
-        public bool Connect(String pass)
+        public bool Connect(String pass, out bool ConnToDbSuccess, out bool ConnToXmlSuccess)
         {
-
             xp = new XmlParser(path);
 
             db = new DataBase();
@@ -36,44 +35,43 @@ namespace NbuClient
             this.dbPass = pass;
             if (!db.ConnectToDb(dbName, dbPass))
             {
+                ConnToDbSuccess = false;
+                ConnToXmlSuccess = true;
                 return false;
+            }
+            else
+            {
+                ConnToDbSuccess = true;
             }
 
 
-            if (xp.getFile())
+            if (xp.getFile()) 
             {
                 TotalInfo ti = xp.ParseFile();
 
                 db.CreateTables();
                 db.FillTables(ti);
+
+                ConnToXmlSuccess = true;
             }
             else
             {
-                if (!db.CheckIfDbExist(dbName))
-                {
-                    return false;
-                }
+                ConnToXmlSuccess = false;
             }
             return true;
         }
 
         public bool Update()
         {
-            if (xp.getFile())
+            if (xp.getFile()) 
             {
                 TotalInfo ti = xp.ParseFile();
 
                 db.CreateTables();
                 db.FillTables(ti);
+                return true;
             }
-            else
-            {
-                if (!db.CheckIfDbExist(dbName))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return false;
         }
 
         public String GetDate()

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.Xml;
 using System.Net;
+using System.Net.NetworkInformation;
 
 namespace NbuClient
 {
@@ -27,9 +28,15 @@ namespace NbuClient
             }
             try
             {
-                WebClient webClient = new WebClient();
+                if (CheckForInternetConnection())
+                {
+                    WebClient webClient = new WebClient();
 
-                webClient.DownloadFile(url, filePath);
+                    webClient.DownloadFile(url, filePath);
+                } else
+                {
+                    return false ;
+                }
             }
             catch
             {
@@ -37,6 +44,34 @@ namespace NbuClient
             }
 
             return true;
+        }
+
+        public static bool CheckForInternetConnection()
+        {
+            //try
+            //{
+            //    using (var client = new WebClient())
+            //    using (client.OpenRead("http://google.com/generate_204"))
+            //        return true;
+            //}
+            //catch
+            //{
+            //    return false;
+            //}
+            try
+            {
+                Ping myPing = new Ping();
+                String host = "google.com";
+                byte[] buffer = new byte[32];
+                int timeout = 1000;
+                PingOptions pingOptions = new PingOptions();
+                PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
+                return (reply.Status == IPStatus.Success);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public TotalInfo ParseFile()
