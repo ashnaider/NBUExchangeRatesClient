@@ -113,6 +113,30 @@ namespace NbuClient
         {
             return db.GetOrgTypes();
         }
+
+        public List<PublicOrganization> GetOrganizationsFilteredByValues(UsersInput ui)
+        {
+            return db.GetOrganizationsFilteredByValues(ui);
+        }
+
+        public List<string[]> GenerateListViewData(List<PublicOrganization> source)
+        {
+            List<string[]> res = new List<string[]>();
+            foreach (PublicOrganization po in source)
+            {
+                res.Add(new string[] { po.Title, po.orgType, po.City });
+            }
+            return res;
+        }
+    }
+
+    struct UsersInput
+    {
+        public String Currency;
+        public String Region;
+        public String City;
+        public String SortBy;
+        public String OrgType;
     }
 
 }

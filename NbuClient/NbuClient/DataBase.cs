@@ -190,15 +190,18 @@ namespace NbuClient
             return res;
         }
 
-        public List<PublicOrganization> GetOrganizations(bool Banks = true, bool Exchangers = true)
+        public List<PublicOrganization> GetOrganizations(bool Banks = true, bool Exchangers = true, String command = "null")
         {
-            String command = "select * from organization " +
+            if (command == "null")
+            {
+                command = "select * from organization " +
                 "inner join org_type on org_type.org_type_id = organization.org_type_id " +
                 "inner join region on region.region_id = organization.region_id " +
                 "inner join city on city.city_id = organization.city_id " +
                 "inner join currency on currency.org_id = organization.id " +
                 "inner join curr_info on curr_info.eng_title = currency.curr_id " +
                 "order by organization.id;";
+            }
 
             cmd.CommandText = command;
             rdr = cmd.ExecuteReader();
@@ -246,7 +249,7 @@ namespace NbuClient
                 publicOrgTmp.Title = rdr.GetString(2);
                 publicOrgTmp.Phone = rdr.GetString(3);
                 publicOrgTmp.Address = rdr.GetString(4);
-                publicOrgTmp.orgType = rdr.GetInt32(8).ToString();
+                publicOrgTmp.orgType = rdr.GetString(9).Remove(rdr.GetString(9).Length - 1); // rdr.GetInt32(8).ToString();
 
                 publicOrgTmp.Region = rdr.GetString(12);
                 publicOrgTmp.City = rdr.GetString(15);
@@ -272,6 +275,91 @@ namespace NbuClient
             return res;
         }
 
+
+
+        public List<PublicOrganization> GetOrganizationsFilteredByValues(UsersInput ui)
+        {
+            String command = "select * from organization " +
+                "inner join org_type on org_type.org_type_id = organization.org_type_id " +
+                "inner join region on region.region_id = organization.region_id " +
+                "inner join city on city.city_id = organization.city_id " +
+                "inner join currency on currency.org_id = organization.id " +
+                "inner join curr_info on curr_info.eng_title = currency.curr_id ";
+
+            if (ui.Currency != "All" || ui.Region != "All" || ui.City != "All" || ui.OrgType != "All")
+            {
+                command += "WHERE ";
+            }
+            bool first = true;
+            if (ui.Currency != "All")
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    command += " AND ";
+                }
+                command += "currency.curr_id = '" + ui.Currency + "' ";
+            }
+            if (ui.Region != "All")
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    command += " AND ";
+                }
+                command += " region.title = '" + ui.Region + "' ";
+            }
+            if (ui.City != "All")
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    command += " AND ";
+                }
+                command += "city.title = '" + ui.City + "' ";
+            }
+            if (ui.OrgType != "All")
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    command += "AND ";
+                }
+                command += "org.title = '" + ui.OrgType + "' ";
+            }
+
+            command += "ORDER BY ";
+            if (ui.SortBy == "Min Purchase")
+            {
+                command += "currency.purchase ";
+            }
+            else if (ui.SortBy == "Max Sale")
+            {
+                command += "currency.sale ";
+            }
+            else
+            {
+                command += "organization.id ";
+            }
+            command += ";";
+
+            // Console.WriteLine("\n\n" + command + "\n\n");
+
+            return GetOrganizations(true, true, command);
+
+        }
 
         public void FillTables(TotalInfo totalInfo)
         {

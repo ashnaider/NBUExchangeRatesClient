@@ -13,7 +13,7 @@ namespace NbuClient
     public partial class Form1 : Form
     {
         DbController dbc;
-
+        bool isNotLoaded = true;
         public Form1()
         {
             InitializeComponent();
@@ -21,6 +21,7 @@ namespace NbuClient
             {
                 this.Close();
             }
+            isNotLoaded = false;
         }
 
         String GetPass()
@@ -70,7 +71,7 @@ namespace NbuClient
         {
             UpdateDateFromDb();
             UpdateCurrenciesFromDb();
-            UpdateRegionsFromDb();
+            UpdateRegionsFromDb(new List<Region>(0));
             UpdateCitiesFromDb();
             UpdateSortByComboBox();
             UpdateOrgTypeFromDb();
@@ -98,10 +99,14 @@ namespace NbuClient
             }
         }
 
-        void UpdateRegionsFromDb()
+        void UpdateRegionsFromDb(List<Region> regs)
         {
             RegionComboBox.Items.Clear();
-            List<Region> regs = dbc.GetAllRegions();
+            if (regs.Count() == 0)
+            {
+                regs = dbc.GetAllRegions();
+            }
+
             this.RegionComboBox.Items.Add("All");
             this.RegionComboBox.Text = "All";
 
@@ -149,29 +154,86 @@ namespace NbuClient
             }
         }
 
-        List<String> GetInputValues()
+        UsersInput GetUsersInput()
         {
-            List<String> res = new List<String>(0);
-            res.Add(CurrencyComboBox.Text.Split(' ')[0]);
+            UsersInput res = new UsersInput();
 
-            res.Add(RegionComboBox.Text);
-            res.Add(CityComboBox.Text);
-            res.Add(SortByComboBox.Text);
-            res.Add(OrgTypeComboBox.Text);
+            res.Currency = CurrencyComboBox.Text.Split(' ')[0];
+            res.Region = RegionComboBox.Text;
+            res.City = CityComboBox.Text;
+            res.OrgType = OrgTypeComboBox.Text;
+            res.SortBy = SortByComboBox.Text;
             
-            String values = "";
-            foreach (String t in res)
-            {
-                values += t + "\n";
-            }
-            MessageBox.Show(values);
 
             return res;
         }
 
         private void FindButton_Click(object sender, EventArgs e)
         {
-            GetInputValues();
+            // GetInputValues();
+            // TODO: update all other combo boxes
+            if (isNotLoaded)
+            {
+                return;
+            }
+
+            UsersInput ui = GetUsersInput();
+
+            List<PublicOrganization> po = dbc.GetOrganizationsFilteredByValues(ui);
+            
+            if (po.Count() == 1)
+            {
+                try
+                {
+                    int tmp = po[0].Title.Length;
+                    // MessageBox.Show("in find button try " + tmp);
+                }
+                catch
+                {
+                    clearBanksListView();
+                    MessageBox.Show("There no banks with this filters");
+                    return;
+                }
+                
+            }
+            // MessageBox.Show("in find button " + po.Count());
+
+            fillBanksListView(dbc.GenerateListViewData(po));
+
+        }
+
+        private void clearBanksListView()
+        {
+            BanksListView.Items.Clear();
+            BanksListView.Columns.Clear();
+        }
+
+        private void fillBanksListView(List<string []> list)
+        {
+            clearBanksListView();
+
+            BanksListView.View = View.Details;
+            BanksListView.LabelEdit = false;
+            BanksListView.FullRowSelect = true;
+            BanksListView.GridLines = true;
+
+            BanksListView.Columns.Add("Title");
+            BanksListView.Columns.Add("OrgType");
+            BanksListView.Columns.Add("City");
+
+            foreach (var it in list)
+            {
+                String bank = "";
+                foreach (String b in it)
+                {
+                    bank += b + " ";
+                }
+                // MessageBox.Show(bank);
+                ListViewItem oneItem = new ListViewItem(it);
+                BanksListView.Items.Add(oneItem);
+            }
+            BanksListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            BanksListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
     }
 }

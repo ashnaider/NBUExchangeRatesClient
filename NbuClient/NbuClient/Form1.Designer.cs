@@ -48,6 +48,7 @@
             // 
             // CurrencyComboBox
             // 
+            this.CurrencyComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.CurrencyComboBox.FormattingEnabled = true;
             this.CurrencyComboBox.Location = new System.Drawing.Point(48, 130);
             this.CurrencyComboBox.Name = "CurrencyComboBox";
@@ -56,6 +57,7 @@
             // 
             // RegionComboBox
             // 
+            this.RegionComboBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.RegionComboBox.FormattingEnabled = true;
             this.RegionComboBox.Location = new System.Drawing.Point(346, 130);
             this.RegionComboBox.Name = "RegionComboBox";
@@ -64,6 +66,7 @@
             // 
             // CityComboBox
             // 
+            this.CityComboBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.CityComboBox.FormattingEnabled = true;
             this.CityComboBox.Location = new System.Drawing.Point(611, 130);
             this.CityComboBox.Name = "CityComboBox";
@@ -72,6 +75,7 @@
             // 
             // SortByComboBox
             // 
+            this.SortByComboBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.SortByComboBox.FormattingEnabled = true;
             this.SortByComboBox.Items.AddRange(new object[] {
             "All",
@@ -84,6 +88,7 @@
             // 
             // UpdateButton
             // 
+            this.UpdateButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.UpdateButton.Location = new System.Drawing.Point(1085, 27);
             this.UpdateButton.Name = "UpdateButton";
             this.UpdateButton.Size = new System.Drawing.Size(137, 30);
@@ -94,6 +99,7 @@
             // 
             // FindButton
             // 
+            this.FindButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.FindButton.Location = new System.Drawing.Point(1085, 124);
             this.FindButton.Name = "FindButton";
             this.FindButton.Size = new System.Drawing.Size(137, 30);
@@ -104,6 +110,7 @@
             // 
             // CurrencyLabel
             // 
+            this.CurrencyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.CurrencyLabel.AutoSize = true;
             this.CurrencyLabel.Location = new System.Drawing.Point(45, 95);
             this.CurrencyLabel.Name = "CurrencyLabel";
@@ -113,6 +120,7 @@
             // 
             // CityLabel
             // 
+            this.CityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.CityLabel.AutoSize = true;
             this.CityLabel.Location = new System.Drawing.Point(608, 95);
             this.CityLabel.Name = "CityLabel";
@@ -122,6 +130,7 @@
             // 
             // SortByLabel
             // 
+            this.SortByLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.SortByLabel.AutoSize = true;
             this.SortByLabel.Location = new System.Drawing.Point(756, 95);
             this.SortByLabel.Name = "SortByLabel";
@@ -131,6 +140,7 @@
             // 
             // RegionLabel
             // 
+            this.RegionLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.RegionLabel.AutoSize = true;
             this.RegionLabel.Location = new System.Drawing.Point(343, 95);
             this.RegionLabel.Name = "RegionLabel";
@@ -140,6 +150,7 @@
             // 
             // DateLabel
             // 
+            this.DateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.DateLabel.AutoSize = true;
             this.DateLabel.Location = new System.Drawing.Point(45, 27);
             this.DateLabel.Name = "DateLabel";
@@ -149,12 +160,16 @@
             // 
             // BanksListView
             // 
+            this.BanksListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.BanksListView.HideSelection = false;
             this.BanksListView.Location = new System.Drawing.Point(48, 189);
             this.BanksListView.Name = "BanksListView";
             this.BanksListView.Size = new System.Drawing.Size(758, 415);
             this.BanksListView.TabIndex = 13;
             this.BanksListView.UseCompatibleStateImageBehavior = false;
+            this.BanksListView.View = System.Windows.Forms.View.Details;
             // 
             // CurrencyListView
             // 
@@ -167,6 +182,7 @@
             // 
             // LastDateLabel
             // 
+            this.LastDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.LastDateLabel.AutoSize = true;
             this.LastDateLabel.Location = new System.Drawing.Point(137, 27);
             this.LastDateLabel.Name = "LastDateLabel";
@@ -176,6 +192,7 @@
             // 
             // OrgTypeComboBox
             // 
+            this.OrgTypeComboBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.OrgTypeComboBox.FormattingEnabled = true;
             this.OrgTypeComboBox.Location = new System.Drawing.Point(930, 130);
             this.OrgTypeComboBox.Name = "OrgTypeComboBox";
@@ -184,6 +201,7 @@
             // 
             // label1
             // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(927, 95);
             this.label1.Name = "label1";
