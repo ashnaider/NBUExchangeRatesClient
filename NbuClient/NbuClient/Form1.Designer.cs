@@ -74,6 +74,7 @@
             // 
             this.SortByComboBox.FormattingEnabled = true;
             this.SortByComboBox.Items.AddRange(new object[] {
+            "All",
             "Min Purchase",
             "Max Sale"});
             this.SortByComboBox.Location = new System.Drawing.Point(759, 130);

@@ -36,7 +36,6 @@ namespace NbuClient
             UpdateCurrenciesFromDb();
             UpdateRegionsFromDb();
             UpdateCitiesFromDb();
-            UpdateSortByFromDb();
             UpdateOrgTypeFromDb();
         }
         void UpdateDateFromDb()
@@ -46,6 +45,7 @@ namespace NbuClient
 
         void UpdateCurrenciesFromDb()
         {
+            CurrencyComboBox.Items.Clear();
             List<CurrInfo> currInfo = dbc.GetAllCurrenciesInfo();
             this.CurrencyComboBox.Items.Add("All");
             this.CurrencyComboBox.Text = "All";
@@ -58,6 +58,7 @@ namespace NbuClient
 
         void UpdateRegionsFromDb()
         {
+            RegionComboBox.Items.Clear();
             List<Region> regs = dbc.GetAllRegions();
             this.RegionComboBox.Items.Add("All");
             this.RegionComboBox.Text = "All";
@@ -70,6 +71,7 @@ namespace NbuClient
 
         void UpdateCitiesFromDb()
         {
+            CityComboBox.Items.Clear();
             List<City> cities = dbc.GetAllCities();
             this.CityComboBox.Items.Add("All");
             this.CityComboBox.Text = "All";
@@ -79,14 +81,9 @@ namespace NbuClient
             }
         }
 
-        void UpdateSortByFromDb()
-        {
-            SortByComboBox.Items.Add("All");
-            SortByComboBox.Text = "All";
-        }
-
         void UpdateOrgTypeFromDb()
         {
+            OrgTypeComboBox.Items.Clear();
             List<OrgType> ot = dbc.GetOrgTypes();
             OrgTypeComboBox.Items.Add("All");
             OrgTypeComboBox.Text = "All";
