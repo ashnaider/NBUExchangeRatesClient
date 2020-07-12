@@ -44,7 +44,6 @@ namespace NbuClient
             GetDataAndFillBanksListView();
         }
 
- 
         bool Connect()
         {
             dbc = new DbController();

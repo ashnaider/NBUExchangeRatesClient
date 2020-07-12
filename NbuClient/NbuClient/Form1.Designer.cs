@@ -50,7 +50,7 @@
             this.CurrencyComboBox.FormattingEnabled = true;
             this.CurrencyComboBox.Location = new System.Drawing.Point(48, 132);
             this.CurrencyComboBox.Name = "CurrencyComboBox";
-            this.CurrencyComboBox.Size = new System.Drawing.Size(305, 24);
+            this.CurrencyComboBox.Size = new System.Drawing.Size(337, 24);
             this.CurrencyComboBox.TabIndex = 0;
             this.CurrencyComboBox.SelectedIndexChanged += new System.EventHandler(this.CurrencyComboBox_SelectedIndexChanged);
             // 
@@ -191,7 +191,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1121, 632);
+            this.ClientSize = new System.Drawing.Size(1153, 633);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.OrgTypeComboBox);
@@ -206,6 +206,8 @@
             this.Controls.Add(this.SortByComboBox);
             this.Controls.Add(this.CityComboBox);
             this.Controls.Add(this.CurrencyComboBox);
+            this.MaximumSize = new System.Drawing.Size(1171, 680);
+            this.MinimumSize = new System.Drawing.Size(1171, 680);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
