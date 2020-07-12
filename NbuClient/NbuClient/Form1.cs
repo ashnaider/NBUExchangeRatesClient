@@ -14,6 +14,11 @@ namespace NbuClient
     {
         DbController dbc;
         bool isNotLoaded = true;
+
+        bool allCurrs = true;
+
+        List<PublicOrganization> currOrganizations;
+
         public Form1()
         {
             InitializeComponent();
@@ -22,12 +27,28 @@ namespace NbuClient
                 this.Close();
             }
             isNotLoaded = false;
+
+            SortByComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            CurrencyComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            CityComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            OrgTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            SetValuesForComboBoxes(new UsersInput
+            {
+                FullCurrTitle = "All",
+                City = "All",
+                OrgType = "All",
+                SortBy = "All"
+            });
+
+            GetDataAndFillBanksListView();
         }
 
         String GetPass()
         {
             return "zw5&gc%3hi";
         }
+
         bool Connect()
         {
             dbc = new DbController();
@@ -71,11 +92,11 @@ namespace NbuClient
         {
             UpdateDateFromDb();
             UpdateCurrenciesFromDb();
-            UpdateRegionsFromDb(new List<Region>(0));
             UpdateCitiesFromDb();
             UpdateSortByComboBox();
             UpdateOrgTypeFromDb();
         }
+
         void UpdateDateFromDb()
         {
             this.LastDateLabel.Text = dbc.GetDate();
@@ -83,7 +104,11 @@ namespace NbuClient
 
         void UpdateSortByComboBox()
         {
-            SortByComboBox.Text = "All";
+            SortByComboBox.Items.Clear();
+
+            SortByComboBox.Items.Add("All");
+            SortByComboBox.Items.Add("Min Purchase");
+            SortByComboBox.Items.Add("Max Sale");
         }
 
         void UpdateCurrenciesFromDb()
@@ -91,28 +116,11 @@ namespace NbuClient
             CurrencyComboBox.Items.Clear();
             List<CurrInfo> currInfo = dbc.GetAllCurrenciesInfo();
             this.CurrencyComboBox.Items.Add("All");
-            this.CurrencyComboBox.Text = "All";
+            // this.CurrencyComboBox.Text = "All";
 
             foreach (CurrInfo ci in currInfo)
             {
                 this.CurrencyComboBox.Items.Add(ci.eng_id + " " + ci.title);
-            }
-        }
-
-        void UpdateRegionsFromDb(List<Region> regs)
-        {
-            RegionComboBox.Items.Clear();
-            if (regs.Count() == 0)
-            {
-                regs = dbc.GetAllRegions();
-            }
-
-            this.RegionComboBox.Items.Add("All");
-            this.RegionComboBox.Text = "All";
-
-            foreach (Region r in regs)
-            {
-                this.RegionComboBox.Items.Add(r.title);
             }
         }
 
@@ -121,7 +129,7 @@ namespace NbuClient
             CityComboBox.Items.Clear();
             List<City> cities = dbc.GetAllCities();
             this.CityComboBox.Items.Add("All");
-            this.CityComboBox.Text = "All";
+            // this.CityComboBox.Text = "All";
             foreach (City c in cities)
             {
                 this.CityComboBox.Items.Add(c.title);
@@ -133,7 +141,7 @@ namespace NbuClient
             OrgTypeComboBox.Items.Clear();
             List<OrgType> ot = dbc.GetOrgTypes();
             OrgTypeComboBox.Items.Add("All");
-            OrgTypeComboBox.Text = "All";
+            // OrgTypeComboBox.Text = "All";
 
             foreach (OrgType t in ot)
             {
@@ -143,15 +151,32 @@ namespace NbuClient
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
+            UsersInput ui = GetUsersInput();
             if (dbc.Update())
             { 
                 UpdateAllFromDb();
+                SetValuesForComboBoxes(ui);
+                // MessageBox.Show("setted ui back");
+                FindOrganizations();
             }
             else
             {
                 MessageBox.Show("Error! Can not connect to XML source server!\n" +
                                 "Check your internet connection or try later");
+                SetValuesForComboBoxes(ui);
             }
+        }
+
+        private void SetValuesForComboBoxes(UsersInput ui)
+        {
+            UpdateSortByComboBox();
+            
+            CurrencyComboBox.Text = ui.FullCurrTitle;
+            CityComboBox.Text = ui.City;
+            OrgTypeComboBox.Text = ui.OrgType;
+            SortByComboBox.Text = ui.SortBy;
+
+            // MessageBox.Show(ui.SortBy);
         }
 
         UsersInput GetUsersInput()
@@ -159,33 +184,61 @@ namespace NbuClient
             UsersInput res = new UsersInput();
 
             res.Currency = CurrencyComboBox.Text.Split(' ')[0];
-            res.Region = RegionComboBox.Text;
+            res.FullCurrTitle = CurrencyComboBox.Text;
             res.City = CityComboBox.Text;
             res.OrgType = OrgTypeComboBox.Text;
             res.SortBy = SortByComboBox.Text;
+
+            // MessageBox.Show(res.Currency + " " + res.City + " " + res.SortBy + " " + res.OrgType);
             
 
             return res;
         }
 
+        private List<string[]> GenerateListViewData(List<PublicOrganization> source, bool withCurrs = false)
+        {
+            // TODO: make four digits after coma
+            List<string[]> res = new List<string[]>();
+            foreach (PublicOrganization po in source)
+            {
+                String purchase = String.Format("{0:0.0000}", po.PublicCurrencies[0].Purchase);
+                String sale = String.Format("{0:0.0000}", po.PublicCurrencies[0].Sale);
+                res.Add(new string[] { po.Title, po.orgType, po.City,
+                po.PublicCurrencies[0].EngTitle, 
+                purchase,
+                sale });
+            }
+            return res;
+        }
+
         private void FindButton_Click(object sender, EventArgs e)
         {
-            // GetInputValues();
-            // TODO: update all other combo boxes
+            FindOrganizations();
+        }
+
+        private void FindOrganizations()
+        {
             if (isNotLoaded)
             {
                 return;
             }
 
+            GetDataAndFillBanksListView();
+            ClearCurrsListView();
+        }
+
+        private void GetDataAndFillBanksListView()
+        {
             UsersInput ui = GetUsersInput();
 
-            List<PublicOrganization> po = dbc.GetOrganizationsFilteredByValues(ui);
-            
-            if (po.Count() == 1)
+            //List<PublicOrganization> po = dbc.GetOrganizationsFilteredByValues(ui);
+            currOrganizations = dbc.GetOrganizationsFilteredByValues(ui);
+
+            if (currOrganizations.Count() == 1)
             {
                 try
                 {
-                    int tmp = po[0].Title.Length;
+                    int tmp = currOrganizations[0].Title.Length;
                     // MessageBox.Show("in find button try " + tmp);
                 }
                 catch
@@ -194,12 +247,11 @@ namespace NbuClient
                     MessageBox.Show("There no banks with this filters");
                     return;
                 }
-                
+
             }
             // MessageBox.Show("in find button " + po.Count());
 
-            fillBanksListView(dbc.GenerateListViewData(po));
-
+            fillBanksListView(GenerateListViewData(currOrganizations));
         }
 
         private void clearBanksListView()
@@ -208,7 +260,7 @@ namespace NbuClient
             BanksListView.Columns.Clear();
         }
 
-        private void fillBanksListView(List<string []> list)
+        private void fillBanksListView(List<string[]> list)
         {
             clearBanksListView();
 
@@ -221,19 +273,206 @@ namespace NbuClient
             BanksListView.Columns.Add("OrgType");
             BanksListView.Columns.Add("City");
 
-            foreach (var it in list)
+            if (!allCurrs)
             {
-                String bank = "";
-                foreach (String b in it)
-                {
-                    bank += b + " ";
-                }
+                BanksListView.Columns.Add("Currency");
+                BanksListView.Columns.Add("Purchase");
+                BanksListView.Columns.Add("Sale");
+
+            }
+
+            foreach (var row in list)
+            {
+                //String bank = "";
+                //foreach (String b in it)
+                //{
+                //    bank += b + " ";
+                //}
                 // MessageBox.Show(bank);
-                ListViewItem oneItem = new ListViewItem(it);
+                ListViewItem oneItem = new ListViewItem(row);
                 BanksListView.Items.Add(oneItem);
             }
             BanksListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             BanksListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
+
+        private void CurrencyComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SortByComboBox.Items.Remove("Min Purchase");
+            SortByComboBox.Items.Remove("Max Sale");
+            SortByComboBox.Text = "All";
+            allCurrs = true;
+
+            if (CurrencyComboBox.Text != "All")
+            {
+                SortByComboBox.Items.Add("Min Purchase");
+                SortByComboBox.Items.Add("Max Sale");
+                allCurrs = false;
+            }
+        }
+
+
+        private void BanksListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // MessageBox.Show("poiupoiu");
+            if (BanksListView.SelectedItems.Count > 0)
+            {
+                String orgName = BanksListView.SelectedItems[0].Text;
+                // MessageBox.Show(orgName);
+                ShowCurrentOrgCurrencies(orgName);
+            }
+
+        }
+        
+        List<string[]> GenerateCurrsData(List<PublicCurrency> currs)
+        {
+            List<string[]> res = new List<string[]>();
+            foreach (PublicCurrency pc in currs)
+            {
+                String purchase = String.Format("{0:0.0000}", pc.Purchase);
+                String sale = String.Format("{0:0.0000}", pc.Sale);
+                res.Add(new string[]
+                {
+                    pc.EngTitle, 
+                    purchase, 
+                    sale
+                }) ;
+            }
+            return res;
+        }
+
+        private void ClearCurrsListView()
+        {
+            CurrencyListView.Items.Clear();
+            CurrencyListView.Columns.Clear();
+        }
+
+        private void ShowCurrentOrgCurrencies(String orgTitle)
+        {
+            ClearCurrsListView();
+
+            CurrencyListView.View = View.Details;
+            CurrencyListView.LabelEdit = false;
+            CurrencyListView.FullRowSelect = true;
+            CurrencyListView.GridLines = true;
+
+            CurrencyListView.Columns.Add("Currency");
+            CurrencyListView.Columns.Add("Purchase");
+            CurrencyListView.Columns.Add("Sale");
+
+            List<string[]> currs = new List<string[]>();
+            if (currOrganizations.Count() > 0)
+            {
+                foreach (PublicOrganization po in currOrganizations)
+                {
+                    if (orgTitle == po.Title)
+                    {
+                        currs = GenerateCurrsData(po.PublicCurrencies);
+                    }
+                }
+            }
+
+            foreach (var row in currs)
+            {
+                ListViewItem item = new ListViewItem(row);
+                CurrencyListView.Items.Add(item);
+            }
+
+            CurrencyListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            CurrencyListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+        }
     }
 }
+
+
+//  some code of feature
+
+//private void UpdateComboBoxes(UsersInput ui)
+//{
+//    SortHeaders sh = dbc.GetNewSortHeaders(ui);
+//    UpdateCurrenciesComboBox(sh.Currencies);
+//    UpdateCitiesComboBox(sh.Cities);
+//    UpdateOrgTypesComboBox(sh.OrgTypes);
+//}
+
+//private void UpdateCurrenciesComboBox(SortedSet<String> currs)
+//{
+//    CurrencyComboBox.Items.Clear();
+//    CurrencyComboBox.Items.Add("All");
+//    if (++counter <= 4)
+//    {
+
+//    CurrencyComboBox.Text = "All";
+//    }
+
+//    foreach (String curr in currs)
+//    {
+//        // MessageBox.Show(curr);
+//        CurrencyComboBox.Items.Add(curr);
+//    }
+//}
+//private void UpdateCitiesComboBox(SortedSet<String> cities)
+//{
+//    CityComboBox.Items.Clear();
+//    CityComboBox.Items.Add("All");
+//    if (++counter <= 4)
+//    {
+//    CityComboBox.Text = "All";
+
+//    }
+
+//    foreach (String city in cities)
+//    {
+//        // MessageBox.Show(city);
+
+//        CityComboBox.Items.Add(city);
+//    }
+//}
+//private void UpdateOrgTypesComboBox(SortedSet<String> orgTypes)
+//{
+//    OrgTypeComboBox.Items.Clear();
+//    OrgTypeComboBox.Items.Add("All");
+
+//    if (++counter <= 4)
+//    {
+//    OrgTypeComboBox.Text = "All";
+
+//    }
+
+//    foreach (String orgType in orgTypes)
+//    {
+//        // MessageBox.Show(orgType);
+
+//        OrgTypeComboBox.Items.Add(orgType);
+//    }
+//}
+
+//private void CurrencyComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+//{
+//    if (isNotLoaded)
+//    {
+//        isNotLoaded = false;
+//        return;
+//    }
+//    // UpdateComboBoxes(GetUsersInput());
+//}
+
+//private void CityComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+//{
+//    if (isNotLoaded)
+//    {
+//        isNotLoaded = false;
+//        return;
+//    }
+//    // UpdateComboBoxes(GetUsersInput());
+//}
+
+//private void OrgTypeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+//{
+//    if (isNotLoaded)
+//    {
+//        isNotLoaded = false;
+//        return;
+//    }
+//    // UpdateComboBoxes(GetUsersInput());
+//}

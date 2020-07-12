@@ -102,13 +102,15 @@ namespace NbuClient
             String command = "SELECT date from date;";
             cmd.CommandText = command;
             rdr = cmd.ExecuteReader();
-            String res = "none";
+
+            String date = "";
             if (rdr.Read())
             {
-                res = rdr.GetString(0);
+                date = rdr.GetString(0);
+                
             }
             rdr.Close();
-            return res;
+            return date;
         }
 
         public List<OrgType> GetOrgTypes()
@@ -134,7 +136,7 @@ namespace NbuClient
 
         public List<Region> GetRegions()
         {
-            String command = "SELECT region_id, title FROM region;";
+            String command = "SELECT region_id, region_title FROM region;";
             cmd.CommandText = command;
             rdr = cmd.ExecuteReader();
 
@@ -153,7 +155,7 @@ namespace NbuClient
 
         public List<City> GetCities()
         {
-            String command = "SELECT city_id, title FROM city;";
+            String command = "SELECT city_id, city_title FROM city;";
             cmd.CommandText = command;
             rdr = cmd.ExecuteReader();
 
@@ -276,17 +278,10 @@ namespace NbuClient
         }
 
 
-
-        public List<PublicOrganization> GetOrganizationsFilteredByValues(UsersInput ui)
+        public String GenerateCommandCondition(UsersInput ui)
         {
-            String command = "select * from organization " +
-                "inner join org_type on org_type.org_type_id = organization.org_type_id " +
-                "inner join region on region.region_id = organization.region_id " +
-                "inner join city on city.city_id = organization.city_id " +
-                "inner join currency on currency.org_id = organization.id " +
-                "inner join curr_info on curr_info.eng_title = currency.curr_id ";
-
-            if (ui.Currency != "All" || ui.Region != "All" || ui.City != "All" || ui.OrgType != "All")
+            String command = "";
+            if (ui.Currency != "All" || ui.City != "All" || ui.OrgType != "All")
             {
                 command += "WHERE ";
             }
@@ -303,18 +298,6 @@ namespace NbuClient
                 }
                 command += "currency.curr_id = '" + ui.Currency + "' ";
             }
-            if (ui.Region != "All")
-            {
-                if (first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    command += " AND ";
-                }
-                command += " region.title = '" + ui.Region + "' ";
-            }
             if (ui.City != "All")
             {
                 if (first)
@@ -325,7 +308,7 @@ namespace NbuClient
                 {
                     command += " AND ";
                 }
-                command += "city.title = '" + ui.City + "' ";
+                command += "city.city_title = '" + ui.City + "' ";
             }
             if (ui.OrgType != "All")
             {
@@ -337,7 +320,7 @@ namespace NbuClient
                 {
                     command += "AND ";
                 }
-                command += "org.title = '" + ui.OrgType + "' ";
+                command += "org_type.org_type_title = '" + ui.OrgType + "' ";
             }
 
             command += "ORDER BY ";
@@ -347,7 +330,7 @@ namespace NbuClient
             }
             else if (ui.SortBy == "Max Sale")
             {
-                command += "currency.sale ";
+                command += "currency.sale desc";
             }
             else
             {
@@ -355,10 +338,69 @@ namespace NbuClient
             }
             command += ";";
 
+            return command;
+        }
+
+        public List<PublicOrganization> GetOrganizationsFilteredByValues(UsersInput ui)
+        {
+            String command = "select * from organization " +
+                "inner join org_type on org_type.org_type_id = organization.org_type_id " +
+                "inner join region on region.region_id = organization.region_id " +
+                "inner join city on city.city_id = organization.city_id " +
+                "inner join currency on currency.org_id = organization.id " +
+                "inner join curr_info on curr_info.eng_title = currency.curr_id ";
+
+            command += GenerateCommandCondition(ui);
+
             // Console.WriteLine("\n\n" + command + "\n\n");
 
             return GetOrganizations(true, true, command);
 
+        }
+
+
+        public SortHeaders GetNewSortHeaders(UsersInput currUi)
+        {
+            String command = "select * " +
+                "from organization " +
+                "inner join org_type on org_type.org_type_id = organization.org_type_id " +
+                "inner join city on city.city_id = organization.city_id " +
+                "inner join currency on currency.org_id = organization.id " +
+                "inner join curr_info on curr_info.eng_title = currency.curr_id ";
+
+
+            command += GenerateCommandCondition(currUi);
+
+            Console.WriteLine("\n\n" + command + "\n\n");
+
+            cmd.CommandText = command;
+            rdr = cmd.ExecuteReader();
+
+            SortHeaders sh = new SortHeaders();
+            SortedSet<String> currencies = new SortedSet<String>();
+            SortedSet<String> cities = new SortedSet<String>();
+            SortedSet<String> orgTypes = new SortedSet<String>();
+            String tmp = "";
+            while (rdr.Read())
+            {
+                tmp = rdr["eng_title"] + " " + rdr["rus_title"];
+                currencies.Add(tmp);
+                // Console.WriteLine(tmp);
+
+                tmp = rdr["city_title"].ToString();
+                cities.Add(tmp);
+                // Console.WriteLine(tmp);
+
+                tmp = rdr["org_type_title"].ToString();
+                orgTypes.Add(tmp);
+                // Console.WriteLine(tmp);
+
+            }
+            sh.Currencies = currencies;
+            sh.Cities = cities;
+            sh.OrgTypes = orgTypes;
+            rdr.Close();
+            return sh;
         }
 
         public void FillTables(TotalInfo totalInfo)
@@ -372,7 +414,7 @@ namespace NbuClient
             foreach (OrgType ot in totalInfo.orgTypes)
             {
                 this.InsertIntoWithValues("org_type",
-                    new List<String> { "org_type_id", "title" },
+                    new List<String> { "org_type_id", "org_type_title" },
                     new List<String> { ot.id.ToString(), ot.title });
             }
 
@@ -380,7 +422,7 @@ namespace NbuClient
             foreach (Region r in totalInfo.regions)
             {
                 this.InsertIntoWithValues("region",
-                    new List<String> { "region_id, title" },
+                    new List<String> { "region_id", "region_title" },
                     new List<String> { r.region_id, r.title });
             }
 
@@ -388,7 +430,7 @@ namespace NbuClient
             foreach (City c in totalInfo.cities)
             {
                 this.InsertIntoWithValues("city",
-                    new List<String> { "city_id", "title" },
+                    new List<String> { "city_id", "city_title" },
                     new List<string> { c.city_id, c.title });
             }
 
@@ -493,17 +535,17 @@ namespace NbuClient
 
             List<String> commands = new List<String>(0);
 
-            commands.Add("CREATE TABLE org_type ( id SERIAL NOT NULL PRIMARY KEY, org_type_id INTEGER, title VARCHAR(50) );");
+            commands.Add("CREATE TABLE org_type ( id SERIAL NOT NULL PRIMARY KEY, org_type_id INTEGER, org_type_title VARCHAR(50) );");
 
             commands.Add("CREATE TABLE region ( " +
                 "id SERIAL NOT NULL PRIMARY KEY, " +
                 "region_id VARCHAR(100), " +
-                "title VARCHAR(100) );");
+                "region_title VARCHAR(100) );"); // here was changed TODO : try to change names and get values by column names 
 
             commands.Add("CREATE TABLE city ( " +
                 "id SERIAL NOT NULL PRIMARY KEY, " +
                 "city_id VARCHAR(100), " +
-                "title VARCHAR(100) );");
+                "city_title VARCHAR(100) );");
 
             commands.Add("CREATE TABLE curr_info (" +
                 "id SERIAL NOT NULL PRIMARY KEY," +
@@ -586,6 +628,5 @@ namespace NbuClient
         }
 
     }
-
 
 }

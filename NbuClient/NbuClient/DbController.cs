@@ -45,7 +45,7 @@ namespace NbuClient
             }
 
 
-            if (xp.getFile()) 
+            if (xp.getFile())
             {
                 TotalInfo ti = xp.ParseFile();
 
@@ -63,7 +63,7 @@ namespace NbuClient
 
         public bool Update()
         {
-            if (xp.getFile()) 
+            if (xp.getFile())
             {
                 TotalInfo ti = xp.ParseFile();
 
@@ -114,29 +114,32 @@ namespace NbuClient
             return db.GetOrgTypes();
         }
 
+        public SortHeaders GetNewSortHeaders(UsersInput currUi)
+        {
+            return db.GetNewSortHeaders(currUi);
+        }
+
         public List<PublicOrganization> GetOrganizationsFilteredByValues(UsersInput ui)
         {
             return db.GetOrganizationsFilteredByValues(ui);
         }
 
-        public List<string[]> GenerateListViewData(List<PublicOrganization> source)
-        {
-            List<string[]> res = new List<string[]>();
-            foreach (PublicOrganization po in source)
-            {
-                res.Add(new string[] { po.Title, po.orgType, po.City });
-            }
-            return res;
-        }
+
     }
 
     struct UsersInput
     {
         public String Currency;
-        public String Region;
+        public String FullCurrTitle;
         public String City;
         public String SortBy;
         public String OrgType;
     }
 
+    struct SortHeaders
+    {
+        public SortedSet<String> Currencies;
+        public SortedSet<String> Cities;
+        public SortedSet<String> OrgTypes;
+    }
 }
