@@ -46,14 +46,14 @@ namespace NbuClient
 
         String GetPass()
         {
-            return "zw5&gc%3hi";
+            return "pass";
         }
 
         bool Connect()
         {
             dbc = new DbController();
-
-            String pass = "!!!! YOUR PATH TO DB !!!!";
+            
+            String pass = "!!!! YOUR PASS TO DB !!!!";
 
             pass = GetPass();
 
