@@ -44,18 +44,13 @@ namespace NbuClient
             GetDataAndFillBanksListView();
         }
 
-        String GetPass()
-        {
-            return "pass";
-        }
-
+ 
         bool Connect()
         {
             dbc = new DbController();
             
             String pass = "!!!! YOUR PASS TO DB !!!!";
 
-            pass = GetPass();
 
             bool isConnToDbSuccess, isConnToXmlSuccess;
             dbc.Connect(pass, out isConnToDbSuccess, out isConnToXmlSuccess);
