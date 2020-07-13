@@ -375,6 +375,39 @@ namespace NbuClient
             CurrencyListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             CurrencyListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
+
+        private void BanksListView_MouseUp(object sender, MouseEventArgs e)
+        {
+            bool match = false;
+            int counter = -1;
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                foreach (ListViewItem item in BanksListView.Items)
+                {
+                    ++counter;
+                    if (item.Bounds.Contains(new Point(e.X, e.Y)))
+                    {
+
+                        match = true;
+                        break;
+                    }
+                }
+                if (match)
+                { 
+                    if (BanksListView.SelectedItems.Count > 0)
+                    {
+                        String orgName = "";
+                        orgName += "Title:\t" + currOrganizations[counter].Title + "\n" +
+                                   "Region:\t" + currOrganizations[counter].Region + "\n" +
+                                   "City:\t" + currOrganizations[counter].City + "\n" +
+                                   "Address:\t" + currOrganizations[counter].Address + "\n" +
+                                   "OrgType:\t" + currOrganizations[counter].orgType + "\n" +
+                                   "Phone:\t" + currOrganizations[counter].Phone ;
+                        MessageBox.Show(orgName);
+                    }
+                }
+            }
+        }
     }
 }
 

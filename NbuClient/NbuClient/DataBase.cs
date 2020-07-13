@@ -535,7 +535,8 @@ namespace NbuClient
 
             List<String> commands = new List<String>(0);
 
-            commands.Add("CREATE TABLE org_type ( id SERIAL NOT NULL PRIMARY KEY, org_type_id INTEGER, org_type_title VARCHAR(50) );");
+            commands.Add("CREATE TABLE org_type ( id SERIAL NOT NULL PRIMARY KEY, org_type_id INTEGER, " +
+                "org_type_title VARCHAR(50) );");
 
             commands.Add("CREATE TABLE region ( " +
                 "id SERIAL NOT NULL PRIMARY KEY, " +

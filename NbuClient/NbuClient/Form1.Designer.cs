@@ -138,6 +138,7 @@
             this.BanksListView.UseCompatibleStateImageBehavior = false;
             this.BanksListView.View = System.Windows.Forms.View.Details;
             this.BanksListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.BanksListView_ItemSelectionChanged);
+            this.BanksListView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BanksListView_MouseUp);
             // 
             // CurrencyListView
             // 
@@ -206,10 +207,11 @@
             this.Controls.Add(this.SortByComboBox);
             this.Controls.Add(this.CityComboBox);
             this.Controls.Add(this.CurrencyComboBox);
+            this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.MaximumSize = new System.Drawing.Size(1171, 680);
             this.MinimumSize = new System.Drawing.Size(1171, 680);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Currency Exchange";
             this.ResumeLayout(false);
             this.PerformLayout();
 
